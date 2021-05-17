@@ -1,7 +1,7 @@
 package utils
 
 import (
-	countrycli "github.com/LTSpark/Country-App/internal"
+	country "github.com/LTSpark/Country-App/internal/domain"
 )
 
 func ParseSkipLimit(length int, skip int, limit int) (int, int) {
@@ -20,7 +20,7 @@ func ParseSkipLimit(length int, skip int, limit int) (int, int) {
 
 }
 
-func IntersectCountrySlices(s1, s2 []countrycli.Country) (s3 []countrycli.Country) {
+func IntersectCountrySlices(s1, s2 []country.Country) (s3 []country.Country) {
 
 	m := make(map[string]bool)
 

@@ -3,13 +3,10 @@ package cli
 import (
 	"fmt"
 
-	countrycli "github.com/LTSpark/Country-App/internal"
+	country "github.com/LTSpark/Country-App/internal/domain"
 	"github.com/LTSpark/Country-App/utils"
 	"github.com/spf13/cobra"
 )
-
-// CobraFn function definion of run cobra command
-type CobraFn func(cmd *cobra.Command, args []string)
 
 const (
 	nameFlag   = "name"
@@ -18,12 +15,15 @@ const (
 	limitFlag  = "limit"
 )
 
-func InitCountriesCmd(repository countrycli.CountryRepo) *cobra.Command {
+func InitCountriesCmd(repository country.CountryRepo) *cobra.Command {
 
 	countryCmd := &cobra.Command{
 		Use:   "country",
-		Short: "Use:\n  Print data about countries with similar name to given",
-		Run:   runCountriesCmd(repository),
+		Short: "Print data about countries with similar name to given",
+		Long: `This command prints a JSON which contains information about countries
+which is received from an API called RestCountries, this info can be 
+printed in console or written on a csv file`,
+		Run: runCountriesCmd(repository),
 	}
 
 	countryCmd.Flags().StringP(nameFlag, "n", "", "name of the country")
@@ -35,11 +35,11 @@ func InitCountriesCmd(repository countrycli.CountryRepo) *cobra.Command {
 
 }
 
-func runCountriesCmd(repository countrycli.CountryRepo) CobraFn {
+func runCountriesCmd(repository country.CountryRepo) CobraFn {
 
 	return func(cmd *cobra.Command, args []string) {
 
-		var countries []countrycli.Country
+		var countries []country.Country
 
 		name, _ := cmd.Flags().GetString(nameFlag)
 		region, _ := cmd.Flags().GetString(regionFlag)
@@ -66,7 +66,7 @@ func runCountriesCmd(repository countrycli.CountryRepo) CobraFn {
 
 }
 
-func printResponse(c []countrycli.Country, skip, limit int) {
+func printResponse(c []country.Country, skip, limit int) {
 	skip, limit = utils.ParseSkipLimit(len(c), skip, limit)
 	fmt.Println(c[skip:limit])
 	fmt.Printf("Total results: %d", len(c))

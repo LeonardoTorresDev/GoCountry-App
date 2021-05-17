@@ -1,4 +1,4 @@
-package repository
+package restcountries
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	countrycli "github.com/LTSpark/Country-App/internal"
+	country "github.com/LTSpark/Country-App/internal/domain"
 )
 
 const (
@@ -20,17 +20,17 @@ type countryRepo struct {
 	url string
 }
 
-func NewCountriesRepository() countrycli.CountryRepo {
+func NewCountriesRepository() country.CountryRepo {
 	return &countryRepo{url: RestCountriesUrl}
 }
 
-func (c *countryRepo) GetAllCountries() (countries []countrycli.Country, err error) {
+func (c *countryRepo) GetAllCountries() (countries []country.Country, err error) {
 	url := fmt.Sprintf("%v%v", RestCountriesUrl, AllEndpoint)
 	err = c.getJSONResponse(url, &countries)
 	return
 }
 
-func (c *countryRepo) GetCountriesByName(name string) (countries []countrycli.Country, err error) {
+func (c *countryRepo) GetCountriesByName(name string) (countries []country.Country, err error) {
 
 	url := fmt.Sprintf("%v%v%v", RestCountriesUrl, NameEndpoint, name)
 	err = c.getJSONResponse(url, &countries)
@@ -38,7 +38,7 @@ func (c *countryRepo) GetCountriesByName(name string) (countries []countrycli.Co
 
 }
 
-func (c *countryRepo) GetCountriesByRegion(region string) (countries []countrycli.Country, err error) {
+func (c *countryRepo) GetCountriesByRegion(region string) (countries []country.Country, err error) {
 
 	url := fmt.Sprintf("%v%v%v", RestCountriesUrl, RegionEndpoint, region)
 	err = c.getJSONResponse(url, &countries)

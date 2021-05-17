@@ -1,4 +1,4 @@
-package countrycli
+package domain
 
 import (
 	"encoding/json"
