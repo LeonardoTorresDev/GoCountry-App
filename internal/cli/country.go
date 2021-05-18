@@ -15,7 +15,7 @@ const (
 	limitFlag  = "limit"
 )
 
-func InitCountriesCmd(repository country.CountryRepo) *cobra.Command {
+func InitCountriesCmd(read country.CountryRepo, write country.WriteCountryRepo) *cobra.Command {
 
 	countryCmd := &cobra.Command{
 		Use:   "country",
@@ -23,7 +23,7 @@ func InitCountriesCmd(repository country.CountryRepo) *cobra.Command {
 		Long: `This command prints a JSON which contains information about countries
 which is received from an API called RestCountries, this info can be 
 printed in console or written on a csv file`,
-		Run: runCountriesCmd(repository),
+		Run: runCountriesCmd(read, write),
 	}
 
 	countryCmd.Flags().StringP(nameFlag, "n", "", "name of the country")
@@ -35,7 +35,7 @@ printed in console or written on a csv file`,
 
 }
 
-func runCountriesCmd(repository country.CountryRepo) CobraFn {
+func runCountriesCmd(read country.CountryRepo, write country.WriteCountryRepo) CobraFn {
 
 	return func(cmd *cobra.Command, args []string) {
 
@@ -47,28 +47,33 @@ func runCountriesCmd(repository country.CountryRepo) CobraFn {
 		limit, _ := cmd.Flags().GetInt(limitFlag)
 
 		if name != "" {
+			countries, _ = read.NameCountriesStrategy(name)
 			if region != "" {
-				countriesName, _ := repository.GetCountriesByName(name)
-				countriesRegion, _ := repository.GetCountriesByRegion(region)
-				countries = utils.IntersectCountrySlices(countriesName, countriesRegion)
-			} else {
-				countries, _ = repository.GetCountriesByName(name)
+				countriesRegion, _ := read.RegionCountriesStrategy(region)
+				countries = utils.IntersectCountrySlices(countries, countriesRegion)
 			}
 		} else if region != "" {
-			countries, _ = repository.GetCountriesByRegion(region)
+			countries, _ = read.RegionCountriesStrategy(region)
 		} else {
-			countries, _ = repository.GetAllCountries()
+			countries, _ = read.AllCountriesStrategy()
 		}
 
-		printResponse(countries, skip, limit)
+		countries = printResponse(countries, skip, limit)
+		write.StoreCountryList(countries)
 
 	}
 
 }
 
-func printResponse(c []country.Country, skip, limit int) {
+func printResponse(c []country.Country, skip, limit int) []country.Country {
 	skip, limit = utils.ParseSkipLimit(len(c), skip, limit)
-	fmt.Println(c[skip:limit])
+	if len(c) == 0 {
+		fmt.Print("No countries founded")
+		return nil
+	}
+	c = c[skip:limit]
+	fmt.Println(c)
 	fmt.Printf("Total results: %d", len(c))
 	fmt.Printf("\nTotal response: %d", len(c[skip:limit]))
+	return c
 }

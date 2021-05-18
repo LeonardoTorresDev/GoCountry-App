@@ -24,30 +24,25 @@ func NewCountriesRepository() country.CountryRepo {
 	return &countryRepo{url: RestCountriesUrl}
 }
 
-func (c *countryRepo) GetAllCountries() (countries []country.Country, err error) {
+func (c *countryRepo) AllCountriesStrategy() (countries []country.Country, err error) {
 	url := fmt.Sprintf("%v%v", RestCountriesUrl, AllEndpoint)
 	err = c.getJSONResponse(url, &countries)
 	return
 }
 
-func (c *countryRepo) GetCountriesByName(name string) (countries []country.Country, err error) {
-
+func (c *countryRepo) NameCountriesStrategy(name string) (countries []country.Country, err error) {
 	url := fmt.Sprintf("%v%v%v", RestCountriesUrl, NameEndpoint, name)
 	err = c.getJSONResponse(url, &countries)
 	return
-
 }
 
-func (c *countryRepo) GetCountriesByRegion(region string) (countries []country.Country, err error) {
-
+func (c *countryRepo) RegionCountriesStrategy(region string) (countries []country.Country, err error) {
 	url := fmt.Sprintf("%v%v%v", RestCountriesUrl, RegionEndpoint, region)
 	err = c.getJSONResponse(url, &countries)
 	return
-
 }
 
-func (c *countryRepo) getJSONResponse(url string, t interface{}) (err error) {
-
+func (c *countryRepo) getJSONResponse(url string, t *[]country.Country) (err error) {
 	response, err := http.Get(url)
 	if err != nil {
 		return err

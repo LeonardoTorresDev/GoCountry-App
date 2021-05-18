@@ -2,11 +2,13 @@ package domain
 
 import (
 	"encoding/json"
+	"strconv"
 )
 
 // Country struct representation
 type Country struct {
 	Name           string          `json:"name"`
+	AltNames       []string        `json:"altSpellings"`
 	Capital        string          `json:"capital"`
 	Population     int             `json:"population"`
 	Region         string          `json:"region"`
@@ -41,9 +43,13 @@ type RegionalBlocs struct {
 }
 
 type CountryRepo interface {
-	GetCountriesByName(name string) ([]Country, error)
-	GetCountriesByRegion(region string) ([]Country, error)
-	GetAllCountries() ([]Country, error)
+	NameCountriesStrategy(name string) ([]Country, error)
+	RegionCountriesStrategy(region string) ([]Country, error)
+	AllCountriesStrategy() ([]Country, error)
+}
+
+type WriteCountryRepo interface {
+	StoreCountryList(c []Country) error
 }
 
 func (c Country) String() (s string) {
@@ -53,4 +59,18 @@ func (c Country) String() (s string) {
 	}
 	s = string(out)
 	return
+}
+
+func (c Country) ToArray() (arr []string) {
+
+	arr = append(arr, c.Name)
+	arr = append(arr, c.Capital)
+	arr = append(arr, c.Region)
+	arr = append(arr, c.Subregion)
+	arr = append(arr, strconv.Itoa(c.Population))
+	arr = append(arr, strconv.Itoa(int(c.Area)))
+	arr = append(arr, c.Demonym)
+
+	return
+
 }
