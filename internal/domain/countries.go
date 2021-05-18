@@ -49,7 +49,7 @@ type CountryRepo interface {
 }
 
 type WriteCountryRepo interface {
-	StoreCountryList(c []Country) error
+	StoreCountryList(c []Country, fileName string) error
 }
 
 func (c Country) String() (s string) {

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	CsvFile = "countries.csv"
+	CsvExtension = ".csv"
 )
 
 type writeCountryRepo struct {
@@ -19,33 +19,27 @@ func NewWriteCountryRepository() country.WriteCountryRepo {
 	return &writeCountryRepo{}
 }
 
-func (w *writeCountryRepo) StoreCountryList(c []country.Country) (err error) {
+func (w *writeCountryRepo) StoreCountryList(c []country.Country, fileName string) (err error) {
 
 	var file *os.File
+	CsvFile := fileName + CsvExtension
 
 	if _, err := os.Stat(CsvFile); err == nil {
-		file, err = os.OpenFile(CsvFile, os.O_APPEND|os.O_WRONLY, 0644)
+		fmt.Printf("Appending data to existing file %s...\n", CsvFile)
+		file, err = os.OpenFile(CsvFile, os.O_RDWR|os.O_APPEND, 0660)
 		if nil != err {
-			fmt.Println(err.Error())
 			return err
 		}
 	} else if os.IsNotExist(err) {
+		fmt.Printf("Creating new file %s...\n", CsvFile)
 		file, err = os.Create(CsvFile)
 		if nil != err {
-			fmt.Println(err.Error())
 			return err
 		}
 	}
 
+	defer file.Close()
 	writer := csv.NewWriter(file)
-
-	defer func() {
-		writer.Flush()
-		e := file.Close()
-		if nil != e {
-			err = e
-		}
-	}()
 
 	for _, value := range c {
 		err := writer.Write(value.ToArray())
@@ -54,5 +48,7 @@ func (w *writeCountryRepo) StoreCountryList(c []country.Country) (err error) {
 		}
 	}
 
+	defer writer.Flush()
 	return nil
+
 }
