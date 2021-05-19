@@ -48,6 +48,19 @@ printed in console or written on a csv file`,
 
 }
 
+func InitWriteCmd(read country.CountryRepo, write country.WriteCountryRepo) *cobra.Command {
+	writeCmd := &cobra.Command{
+		Use:   "write",
+		Short: "Write data of countries around the world in a csv file",
+		Long: `This command creates a csv file which contain information
+about countries from all around the world, you can modify the name of file as well`,
+		Run: runWriteCmd(read, write),
+	}
+
+	writeCmd.Flags().StringP(fileNameFlag, "f", "countries", "name of the csv file")
+	return writeCmd
+}
+
 func runCountriesCmd(read country.CountryRepo, write country.WriteCountryRepo) CobraFn {
 
 	return func(cmd *cobra.Command, args []string) {
@@ -93,7 +106,16 @@ func runCountriesCmd(read country.CountryRepo, write country.WriteCountryRepo) C
 		}
 
 		fmt.Printf("Total results: %d", numberOfCountries)
-		fmt.Printf("\nTotal response: %d", len(countries))
+		fmt.Printf("\nTotal response: %d", limit)
 
+	}
+}
+
+func runWriteCmd(read country.CountryRepo, write country.WriteCountryRepo) CobraFn {
+	return func(cmd *cobra.Command, args []string) {
+		csvName, _ := cmd.Flags().GetString(fileNameFlag)
+		countries, _ := read.AllCountriesStrategy()
+		write.StoreAllCountriesList(countries, csvName)
+		fmt.Printf("csv file '%s.csv' created successfully", csvName)
 	}
 }

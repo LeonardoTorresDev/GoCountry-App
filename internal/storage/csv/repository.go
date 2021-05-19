@@ -52,3 +52,28 @@ func (w *writeCountryRepo) StoreCountryList(c []country.Country, fileName string
 	return nil
 
 }
+
+func (w *writeCountryRepo) StoreAllCountriesList(c []country.Country, fileName string) (err error) {
+
+	CsvFile := fileName + CsvExtension
+
+	file, err := os.Create(CsvFile)
+	if nil != err {
+		return err
+	}
+
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	for _, value := range c {
+		err := writer.Write(value.ToArray())
+		if nil != err {
+			return err
+		}
+	}
+
+	return nil
+
+}

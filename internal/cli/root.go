@@ -14,8 +14,12 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+
 	write := csv.NewWriteCountryRepository()
 	read := restcountries.NewCountriesRepository()
+
 	rootCmd.AddCommand(InitCountriesCmd(read, write))
+	rootCmd.AddCommand(InitWriteCmd(read, write))
+
 	rootCmd.Execute()
 }
