@@ -68,6 +68,7 @@ func (w *writeCountryRepo) StoreAllCountriesList(c []domain.Country, fileName st
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
+	writer.Write([]string{"Name", "Capital", "Region", "Subregion", "Population", "Area", "Demonym"})
 	for _, value := range c {
 		err := writer.Write(value.ToArray())
 		if nil != err {

@@ -1,3 +1,4 @@
+Name,Capital,Region,Subregion,Population,Area,Demonym
 Afghanistan,Kabul,Asia,Southern Asia,27657145,652230,Afghan
 Åland Islands,Mariehamn,Europe,Northern Europe,28875,1580,Ålandish
 Albania,Tirana,Europe,Southern Europe,2886026,28748,Albanian
@@ -248,33 +249,3 @@ Western Sahara,El Aaiún,Africa,Northern Africa,510713,266000,Sahrawi
 Yemen,Sana'a,Asia,Western Asia,27478000,527968,Yemeni
 Zambia,Lusaka,Africa,Eastern Africa,15933883,752612,Zambian
 Zimbabwe,Harare,Africa,Eastern Africa,14240168,390757,Zimbabwean
-Bhutan,Thimphu,Asia,Southern Asia,775620,38394,Bhutanese
-Brunei Darussalam,Bandar Seri Begawan,Asia,South-Eastern Asia,411900,5765,Bruneian
-Cambodia,Phnom Penh,Asia,South-Eastern Asia,15626444,181035,Cambodian
-China,Beijing,Asia,Eastern Asia,1377422166,9640011,Chinese
-Georgia,Tbilisi,Asia,Western Asia,3720400,69700,Georgian
-Hong Kong,City of Victoria,Asia,Eastern Asia,7324300,1104,Chinese
-India,New Delhi,Asia,Southern Asia,1295210000,3287590,Indian
-Indonesia,Jakarta,Asia,South-Eastern Asia,258705000,1904569,Indonesian
-Iran (Islamic Republic of),Tehran,Asia,Southern Asia,79369900,1648195,Iranian
-Iraq,Baghdad,Asia,Western Asia,37883543,438317,Iraqi
-Israel,Jerusalem,Asia,Western Asia,8527400,20770,Israeli
-Japan,Tokyo,Asia,Eastern Asia,126960000,377930,Japanese
-Jordan,Amman,Asia,Western Asia,9531712,89342,Jordanian
-Kazakhstan,Astana,Asia,Central Asia,17753200,2724900,Kazakhstani
-Kuwait,Kuwait City,Asia,Western Asia,4183658,17818,Kuwaiti
-Kyrgyzstan,Bishkek,Asia,Central Asia,6047800,199951,Kirghiz
-Lao People's Democratic Republic,Vientiane,Asia,South-Eastern Asia,6492400,236800,Laotian
-Lebanon,Beirut,Asia,Western Asia,5988000,10452,Lebanese
-Macao,,Asia,Eastern Asia,649100,30,Chinese
-Malaysia,Kuala Lumpur,Asia,South-Eastern Asia,31405416,330803,Malaysian
-Maldives,Malé,Asia,Southern Asia,344023,300,Maldivan
-Mongolia,Ulan Bator,Asia,Eastern Asia,3093100,1564110,Mongolian
-Myanmar,Naypyidaw,Asia,South-Eastern Asia,51419420,676578,Burmese
-Nepal,Kathmandu,Asia,Southern Asia,28431500,147181,Nepalese
-Korea (Democratic People's Republic of),Pyongyang,Asia,Eastern Asia,25281000,120538,North Korean
-Oman,Muscat,Asia,Western Asia,4420133,309500,Omani
-Pakistan,Islamabad,Asia,Southern Asia,194125062,881912,Pakistani
-"Palestine, State of",Ramallah,Asia,Western Asia,4682467,0,Palestinian
-Philippines,Manila,Asia,South-Eastern Asia,103279800,342353,Filipino
-Qatar,Doha,Asia,Western Asia,2587564,11586,Qatari
