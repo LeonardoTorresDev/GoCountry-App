@@ -2,9 +2,11 @@ package cli
 
 import (
 	"fmt"
+	"log"
 
-	country "github.com/LTSpark/Country-App/internal/domain"
-	"github.com/LTSpark/Country-App/utils"
+	"github.com/LTSpark/Country-App/internal/domain"
+	"github.com/LTSpark/Country-App/internal/errors"
+	"github.com/LTSpark/Country-App/internal/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +20,7 @@ const (
 	consoleFlag  = "console"
 )
 
-func InitCountriesCmd(read country.CountryRepo, write country.WriteCountryRepo) *cobra.Command {
+func InitCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) *cobra.Command {
 
 	countryCmd := &cobra.Command{
 		Use:   "country",
@@ -30,8 +32,8 @@ printed in console or written on a csv file`,
 	}
 
 	//Search flags
-	countryCmd.Flags().StringP(nameFlag, "n", "", "name of the country")
-	countryCmd.Flags().StringP(regionFlag, "r", "", "region to search countries")
+	countryCmd.Flags().StringP(nameFlag, "n", "NoNameGiven", "name of the country")
+	countryCmd.Flags().StringP(regionFlag, "r", "NoRegionGiven", "region to search countries")
 
 	//Pagination flags
 	countryCmd.Flags().IntP(skipFlag, "s", 0, "value to start pagination")
@@ -48,7 +50,7 @@ printed in console or written on a csv file`,
 
 }
 
-func InitWriteCmd(read country.CountryRepo, write country.WriteCountryRepo) *cobra.Command {
+func InitWriteCmd(read domain.CountryRepo, write domain.WriteCountryRepo) *cobra.Command {
 	writeCmd := &cobra.Command{
 		Use:   "write",
 		Short: "Write data of countries around the world in a csv file",
@@ -61,57 +63,38 @@ about countries from all around the world, you can modify the name of file as we
 	return writeCmd
 }
 
-func runCountriesCmd(read country.CountryRepo, write country.WriteCountryRepo) CobraFn {
+func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) CobraFn {
 
 	return func(cmd *cobra.Command, args []string) {
-
-		var countries []country.Country
 
 		name, _ := cmd.Flags().GetString(nameFlag)
 		region, _ := cmd.Flags().GetString(regionFlag)
 		skip, _ := cmd.Flags().GetInt(skipFlag)
 		limit, _ := cmd.Flags().GetInt(limitFlag)
-		csv, _ := cmd.Flags().GetBool(csvFlag)
+		/*csv, _ := cmd.Flags().GetBool(csvFlag)
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
-		console, _ := cmd.Flags().GetBool(consoleFlag)
+		console, _ := cmd.Flags().GetBool(consoleFlag)*/
 
-		if name != "" {
-			countries, _ = read.NameCountriesStrategy(name)
-			if region != "" {
-				countriesRegion, _ := read.RegionCountriesStrategy(region)
-				countries = utils.IntersectCountrySlices(countries, countriesRegion)
-			}
-		} else if region != "" {
-			countries, _ = read.RegionCountriesStrategy(region)
-		} else {
-			countries, _ = read.AllCountriesStrategy()
+		params := domain.Params{
+			Name:   name,
+			Region: region,
 		}
 
-		numberOfCountries := len(countries)
-		if numberOfCountries == 0 {
-			fmt.Print("No countries founded")
-			return
+		countries, err := read.GetCountries(params)
+		if errors.IsDataUnreacheable(err) {
+			log.Fatal(err)
 		}
 
-		skip, limit = utils.ParseSkipLimit(numberOfCountries, skip, limit)
-		countries = countries[skip:limit]
+		countries, numberOfCountries := utils.ParseCountrySlice(countries, skip, limit)
 
-		if csv {
-			write.StoreCountryList(countries, csvName)
-			fmt.Println("Data recovered on csv file correctly")
-		}
-
-		if console {
-			fmt.Println(countries)
-		}
-
-		fmt.Printf("Total results: %d", numberOfCountries)
-		fmt.Printf("\nTotal response: %d", limit)
+		fmt.Println(countries)
+		fmt.Printf("Total countries founded: %d", numberOfCountries)
+		fmt.Printf("\nTotal response: %d", len(countries))
 
 	}
 }
 
-func runWriteCmd(read country.CountryRepo, write country.WriteCountryRepo) CobraFn {
+func runWriteCmd(read domain.CountryRepo, write domain.WriteCountryRepo) CobraFn {
 	return func(cmd *cobra.Command, args []string) {
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
 		countries, _ := read.AllCountriesStrategy()

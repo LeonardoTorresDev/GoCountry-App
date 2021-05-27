@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+	"log"
 	"strconv"
 )
 
@@ -43,9 +44,8 @@ type RegionalBlocs struct {
 }
 
 type CountryRepo interface {
-	NameCountriesStrategy(name string) ([]Country, error)
-	RegionCountriesStrategy(region string) ([]Country, error)
 	AllCountriesStrategy() ([]Country, error)
+	GetCountries(params Params) ([]Country, error)
 }
 
 type WriteCountryRepo interface {
@@ -56,7 +56,7 @@ type WriteCountryRepo interface {
 func (c Country) String() (s string) {
 	out, err := json.MarshalIndent(c, "", "\t")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	s = string(out)
 	return
