@@ -40,7 +40,6 @@ printed in console or written on a csv file`,
 	countryCmd.Flags().IntP(limitFlag, "l", 5, "number of pages")
 
 	//CSV flags
-	countryCmd.Flags().BoolP(csvFlag, "t", true, "permssion to write a csv file")
 	countryCmd.Flags().StringP(fileNameFlag, "f", "countries", "name of the csv file")
 
 	//Console flags
@@ -71,9 +70,9 @@ func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) Cob
 		region, _ := cmd.Flags().GetString(regionFlag)
 		skip, _ := cmd.Flags().GetInt(skipFlag)
 		limit, _ := cmd.Flags().GetInt(limitFlag)
-		/*csv, _ := cmd.Flags().GetBool(csvFlag)
+
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
-		console, _ := cmd.Flags().GetBool(consoleFlag)*/
+		console, _ := cmd.Flags().GetBool(consoleFlag)
 
 		params := domain.Params{
 			Name:   name,
@@ -87,7 +86,14 @@ func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) Cob
 
 		countries, numberOfCountries := utils.ParseCountrySlice(countries, skip, limit)
 
-		fmt.Println(countries)
+		err = write.StoreCountryList(countries, csvName)
+		if errors.IsFileWritingFailed(err) {
+			log.Fatal(err)
+		}
+
+		if console {
+			fmt.Println(countries)
+		}
 		fmt.Printf("Total countries founded: %d", numberOfCountries)
 		fmt.Printf("\nTotal response: %d", len(countries))
 
@@ -96,9 +102,16 @@ func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) Cob
 
 func runWriteCmd(read domain.CountryRepo, write domain.WriteCountryRepo) CobraFn {
 	return func(cmd *cobra.Command, args []string) {
+
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
 		countries, _ := read.AllCountriesStrategy()
-		write.StoreAllCountriesList(countries, csvName)
+
+		err := write.StoreAllCountriesList(countries, csvName)
+		if errors.IsFileWritingFailed(err) {
+			log.Fatal(err)
+		}
+
 		fmt.Printf("csv file '%s.csv' created successfully", csvName)
+
 	}
 }

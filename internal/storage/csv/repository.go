@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	country "github.com/LTSpark/Country-App/internal/domain"
+	"github.com/LTSpark/Country-App/internal/domain"
+	"github.com/LTSpark/Country-App/internal/errors"
 )
 
 const (
@@ -15,26 +16,26 @@ const (
 type writeCountryRepo struct {
 }
 
-func NewWriteCountryRepository() country.WriteCountryRepo {
+func NewWriteCountryRepository() domain.WriteCountryRepo {
 	return &writeCountryRepo{}
 }
 
-func (w *writeCountryRepo) StoreCountryList(c []country.Country, fileName string) (err error) {
+func (w *writeCountryRepo) StoreCountryList(c []domain.Country, fileName string) (err error) {
 
 	var file *os.File
-	CsvFile := fileName + CsvExtension
+	csvFile := fileName + CsvExtension
 
-	if _, err := os.Stat(CsvFile); err == nil {
-		fmt.Printf("Appending data to existing file %s...\n", CsvFile)
-		file, err = os.OpenFile(CsvFile, os.O_RDWR|os.O_APPEND, 0660)
+	if _, err := os.Stat(csvFile); err == nil {
+		fmt.Printf("Appending data to existing file %s...\n", csvFile)
+		file, err = os.OpenFile(csvFile, os.O_RDWR|os.O_APPEND, 0660)
 		if nil != err {
-			return err
+			return errors.WrapFileWritingFailed(err, "Error reading file %s", csvFile)
 		}
 	} else if os.IsNotExist(err) {
-		fmt.Printf("Creating new file %s...\n", CsvFile)
-		file, err = os.Create(CsvFile)
+		fmt.Printf("Creating new file %s...\n", csvFile)
+		file, err = os.Create(csvFile)
 		if nil != err {
-			return err
+			return errors.WrapFileWritingFailed(err, "Error creating file %s", csvFile)
 		}
 	}
 
@@ -44,7 +45,7 @@ func (w *writeCountryRepo) StoreCountryList(c []country.Country, fileName string
 	for _, value := range c {
 		err := writer.Write(value.ToArray())
 		if nil != err {
-			return err
+			return errors.WrapFileWritingFailed(err, "Error writing value %s on file %s", value, csvFile)
 		}
 	}
 
@@ -53,13 +54,13 @@ func (w *writeCountryRepo) StoreCountryList(c []country.Country, fileName string
 
 }
 
-func (w *writeCountryRepo) StoreAllCountriesList(c []country.Country, fileName string) (err error) {
+func (w *writeCountryRepo) StoreAllCountriesList(c []domain.Country, fileName string) (err error) {
 
-	CsvFile := fileName + CsvExtension
+	csvFile := fileName + CsvExtension
 
-	file, err := os.Create(CsvFile)
+	file, err := os.Create(csvFile)
 	if nil != err {
-		return err
+		return errors.WrapFileWritingFailed(err, "Error creating file %s", csvFile)
 	}
 
 	defer file.Close()
@@ -70,7 +71,7 @@ func (w *writeCountryRepo) StoreAllCountriesList(c []country.Country, fileName s
 	for _, value := range c {
 		err := writer.Write(value.ToArray())
 		if nil != err {
-			return err
+			return errors.WrapFileWritingFailed(err, "Error writing value %s on file %s", value, csvFile)
 		}
 	}
 
