@@ -94,8 +94,6 @@ func runCountriesCmd(service fetching.Service) CobraFn {
 		if console {
 			fmt.Println(countries)
 		}
-		fmt.Printf("\nTotal response: %d", len(countries))
-
 	}
 }
 
@@ -109,8 +107,6 @@ func runWriteCmd(service fetching.Service) CobraFn {
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}
-
-		fmt.Printf("csv file '%s.csv' created successfully", csvName)
 
 	}
 }

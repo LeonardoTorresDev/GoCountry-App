@@ -63,6 +63,7 @@ func (w *writeCountryRepo) StoreAllCountriesList(c []domain.Country, fileName st
 		return errors.WrapFileWritingFailed(err, "Error creating file %s", csvFile)
 	}
 
+	fmt.Printf("csv file '%s' created successfully", csvFile)
 	defer file.Close()
 
 	writer := csv.NewWriter(file)

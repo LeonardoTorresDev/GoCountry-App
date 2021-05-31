@@ -41,7 +41,8 @@ func (s *service) FetchCountries(f domain.Flags) (countries []domain.Country, er
 	}
 
 	countries, numberOfCountries := utils.ParseCountrySlice(countries, f.Skip, f.Limit)
-	fmt.Printf("Founded %d countries\n...", numberOfCountries)
+	fmt.Printf("Founded %d countries...\n", numberOfCountries)
+	fmt.Printf("\nTotal response: %d", len(countries))
 
 	return
 
