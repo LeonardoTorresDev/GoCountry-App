@@ -44,7 +44,7 @@ type RegionalBlocs struct {
 }
 
 type CountryRepo interface {
-	AllCountriesStrategy() ([]Country, error)
+	GetAllCountries() ([]Country, error)
 	GetCountries(params Params) ([]Country, error)
 }
 

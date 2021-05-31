@@ -6,7 +6,7 @@ import (
 
 	"github.com/LTSpark/Country-App/internal/domain"
 	"github.com/LTSpark/Country-App/internal/errors"
-	"github.com/LTSpark/Country-App/internal/utils"
+	"github.com/LTSpark/Country-App/internal/fetching"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +20,7 @@ const (
 	consoleFlag  = "console"
 )
 
-func InitCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) *cobra.Command {
+func InitCountriesCmd(service fetching.Service) *cobra.Command {
 
 	countryCmd := &cobra.Command{
 		Use:   "country",
@@ -28,7 +28,7 @@ func InitCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) *c
 		Long: `This command prints a JSON which contains information about countries
 which is received from an API called RestCountries, this info can be 
 printed in console or written on a csv file`,
-		Run: runCountriesCmd(read, write),
+		Run: runCountriesCmd(service),
 	}
 
 	//Search flags
@@ -49,20 +49,20 @@ printed in console or written on a csv file`,
 
 }
 
-func InitWriteCmd(read domain.CountryRepo, write domain.WriteCountryRepo) *cobra.Command {
+func InitWriteCmd(service fetching.Service) *cobra.Command {
 	writeCmd := &cobra.Command{
 		Use:   "write",
 		Short: "Write data of countries around the world in a csv file",
 		Long: `This command creates a csv file which contain information
 about countries from all around the world, you can modify the name of file as well`,
-		Run: runWriteCmd(read, write),
+		Run: runWriteCmd(service),
 	}
 
 	writeCmd.Flags().StringP(fileNameFlag, "f", "countries", "name of the csv file")
 	return writeCmd
 }
 
-func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) CobraFn {
+func runCountriesCmd(service fetching.Service) CobraFn {
 
 	return func(cmd *cobra.Command, args []string) {
 
@@ -74,19 +74,19 @@ func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) Cob
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
 		console, _ := cmd.Flags().GetBool(consoleFlag)
 
-		params := domain.Params{
+		flags := domain.Flags{
 			Name:   name,
 			Region: region,
+			Skip:   skip,
+			Limit:  limit,
 		}
 
-		countries, err := read.GetCountries(params)
+		countries, err := service.FetchCountries(flags)
 		if errors.IsDataUnreacheable(err) {
 			log.Fatal(err)
 		}
 
-		countries, numberOfCountries := utils.ParseCountrySlice(countries, skip, limit)
-
-		err = write.StoreCountryList(countries, csvName)
+		err = service.WriteCountries(countries, csvName)
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}
@@ -94,19 +94,18 @@ func runCountriesCmd(read domain.CountryRepo, write domain.WriteCountryRepo) Cob
 		if console {
 			fmt.Println(countries)
 		}
-		fmt.Printf("Total countries founded: %d", numberOfCountries)
 		fmt.Printf("\nTotal response: %d", len(countries))
 
 	}
 }
 
-func runWriteCmd(read domain.CountryRepo, write domain.WriteCountryRepo) CobraFn {
+func runWriteCmd(service fetching.Service) CobraFn {
 	return func(cmd *cobra.Command, args []string) {
 
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
-		countries, _ := read.AllCountriesStrategy()
+		countries, _ := service.FetchAllCountries()
 
-		err := write.StoreAllCountriesList(countries, csvName)
+		err := service.WriteAllCountries(countries, csvName)
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}

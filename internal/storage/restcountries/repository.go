@@ -26,7 +26,7 @@ func NewCountriesRepository() domain.CountryRepo {
 	return &countryRepo{url: RestCountriesUrl}
 }
 
-func (c *countryRepo) AllCountriesStrategy() (countries []domain.Country, err error) {
+func (c *countryRepo) GetAllCountries() (countries []domain.Country, err error) {
 
 	url := fmt.Sprintf("%v%v", RestCountriesUrl, AllEndpoint)
 	err = c.getJSONResponse(url, &countries)
