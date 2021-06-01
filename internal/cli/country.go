@@ -86,7 +86,7 @@ func runCountriesCmd(service fetching.Service) CobraFn {
 			log.Fatal(err)
 		}
 
-		err = service.WriteCountries(countries, csvName)
+		err = service.WriteCountriesService(countries, csvName)
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}
@@ -103,7 +103,7 @@ func runWriteCmd(service fetching.Service) CobraFn {
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
 		countries, _ := service.FetchAllCountries()
 
-		err := service.WriteAllCountries(countries, csvName)
+		err := service.WriteAllCountriesService(countries, csvName)
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}

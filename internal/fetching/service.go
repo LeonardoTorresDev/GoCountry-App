@@ -14,9 +14,9 @@ type Service interface {
 	//Fetch all countries
 	FetchAllCountries() ([]domain.Country, error)
 	//Write csv countries
-	WriteCountries(countries []domain.Country, csvName string) (err error)
+	WriteCountriesService(countries []domain.Country, csvName string) (err error)
 	//Write new csv with all countries
-	WriteAllCountries(countries []domain.Country, csvName string) (err error)
+	WriteAllCountriesService(countries []domain.Country, csvName string) (err error)
 }
 
 type service struct {
@@ -52,10 +52,10 @@ func (s *service) FetchAllCountries() ([]domain.Country, error) {
 	return s.countryRepo.GetAllCountries()
 }
 
-func (s *service) WriteCountries(countries []domain.Country, csvName string) (err error) {
+func (s *service) WriteCountriesService(countries []domain.Country, csvName string) (err error) {
 	return s.writeCountryRepo.StoreCountryList(countries, csvName)
 }
 
-func (s *service) WriteAllCountries(countries []domain.Country, csvName string) (err error) {
+func (s *service) WriteAllCountriesService(countries []domain.Country, csvName string) (err error) {
 	return s.writeCountryRepo.StoreAllCountriesList(countries, csvName)
 }

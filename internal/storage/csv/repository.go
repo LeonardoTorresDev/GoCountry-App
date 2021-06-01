@@ -42,6 +42,7 @@ func (w *writeCountryRepo) StoreCountryList(c []domain.Country, fileName string)
 	defer file.Close()
 	writer := csv.NewWriter(file)
 
+	//Add overwriter verifier
 	for _, value := range c {
 		err := writer.Write(value.ToArray())
 		if nil != err {
