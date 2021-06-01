@@ -18,10 +18,12 @@ func Execute() {
 
 	write := csv.NewWriteCountryRepository()
 	read := restcountries.NewCountriesRepository()
-	service := fetching.NewService(read, write)
 
-	rootCmd.AddCommand(InitCountriesCmd(service))
-	rootCmd.AddCommand(InitWriteCmd(service))
+	countryService := fetching.NewCountryService(read)
+	writeService := fetching.NewWriteService(write)
+
+	rootCmd.AddCommand(InitCountriesCmd(countryService, writeService))
+	rootCmd.AddCommand(InitWriteCmd(countryService, writeService))
 
 	rootCmd.Execute()
 }

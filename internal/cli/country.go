@@ -20,7 +20,7 @@ const (
 	consoleFlag  = "console"
 )
 
-func InitCountriesCmd(service fetching.Service) *cobra.Command {
+func InitCountriesCmd(countryService fetching.CountryService, writeService fetching.WriteService) *cobra.Command {
 
 	countryCmd := &cobra.Command{
 		Use:   "country",
@@ -28,7 +28,7 @@ func InitCountriesCmd(service fetching.Service) *cobra.Command {
 		Long: `This command prints a JSON which contains information about countries
 which is received from an API called RestCountries, this info can be 
 printed in console or written on a csv file`,
-		Run: runCountriesCmd(service),
+		Run: runCountriesCmd(countryService, writeService),
 	}
 
 	//Search flags
@@ -49,20 +49,20 @@ printed in console or written on a csv file`,
 
 }
 
-func InitWriteCmd(service fetching.Service) *cobra.Command {
+func InitWriteCmd(countryService fetching.CountryService, writeService fetching.WriteService) *cobra.Command {
 	writeCmd := &cobra.Command{
 		Use:   "write",
 		Short: "Write data of countries around the world in a csv file",
 		Long: `This command creates a csv file which contain information
 about countries from all around the world, you can modify the name of file as well`,
-		Run: runWriteCmd(service),
+		Run: runWriteCmd(countryService, writeService),
 	}
 
 	writeCmd.Flags().StringP(fileNameFlag, "f", "countries", "name of the csv file")
 	return writeCmd
 }
 
-func runCountriesCmd(service fetching.Service) CobraFn {
+func runCountriesCmd(countryService fetching.CountryService, writeService fetching.WriteService) CobraFn {
 
 	return func(cmd *cobra.Command, args []string) {
 
@@ -81,12 +81,12 @@ func runCountriesCmd(service fetching.Service) CobraFn {
 			Limit:  limit,
 		}
 
-		countries, err := service.FetchCountries(flags)
+		countries, err := countryService.FetchCountries(flags)
 		if errors.IsDataUnreacheable(err) {
 			log.Fatal(err)
 		}
 
-		err = service.WriteCountriesService(countries, csvName)
+		err = writeService.WriteCountriesService(countries, csvName)
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}
@@ -97,13 +97,13 @@ func runCountriesCmd(service fetching.Service) CobraFn {
 	}
 }
 
-func runWriteCmd(service fetching.Service) CobraFn {
+func runWriteCmd(countryService fetching.CountryService, writeService fetching.WriteService) CobraFn {
 	return func(cmd *cobra.Command, args []string) {
 
 		csvName, _ := cmd.Flags().GetString(fileNameFlag)
-		countries, _ := service.FetchAllCountries()
+		countries, _ := countryService.FetchAllCountries()
 
-		err := service.WriteAllCountriesService(countries, csvName)
+		err := writeService.WriteAllCountriesService(countries, csvName)
 		if errors.IsFileWritingFailed(err) {
 			log.Fatal(err)
 		}
